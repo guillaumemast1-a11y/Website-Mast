@@ -48,7 +48,7 @@
   .hero-text { flex: 1 1 520px; display: flex; flex-direction: column; gap: 28px; align-items: flex-start; }
   h1 { margin: 0; font-family: var(--serif); font-size: clamp(40px, 6vw, 64px); line-height: 1.04; font-weight: 500; color: var(--accent); }
   .lead { margin: 0; font-size: 20px; line-height: 1.6; color: var(--muted); max-width: 560px; }
-  .portrait { flex: 1 1 320px; height: 460px; border-radius: 220px 220px 20px 20px; background: var(--photo); display: flex; align-items: center; justify-content: center; color: var(--soft); font-size: 15px; overflow: hidden; }
+  .portrait { flex: 0 1 280px; height: 340px; margin-left: auto; border-radius: 140px 140px 20px 20px; background: var(--photo); display: flex; align-items: center; justify-content: center; color: var(--soft); font-size: 15px; overflow: hidden; }
   .portrait img { width: 100%; height: 100%; object-fit: cover; }
 
   /* Zorg */
@@ -86,7 +86,7 @@
   @media (max-width: 640px) {
     nav { gap: 18px; font-size: 15px; }
     .hero { padding-bottom: 64px; }
-    .portrait { height: 360px; }
+    .portrait { flex-basis: 220px; height: 270px; margin-left: 0; }
     .zorg .wrap, .over, .bezoek .wrap { padding-top: 64px; padding-bottom: 64px; }
     h2 { font-size: 32px; }
   }
@@ -112,8 +112,8 @@
       <a href="https://www.mtc-it4.be/patient/index.html#/appointments/day/bjNkcWkyQmFRMkpDVTRFNndleFgzSzRwRFR3blpLVFROa2xUY3oyd1JUSFpoa29hSHJKcmFOMEg1Zm5tZVdQTw==" class="btn btn-solid" target="_blank" rel="noopener">Maak een afspraak</a>
     </div>
     <div class="portrait">
-      <!-- Vervang door: <img src="portret.jpg" alt="Dr. Philippe Mast"> -->
-      [PORTRET dr. Mast]
+      <img src="portret.jpg" alt="Dr. Philippe Mast, uroloog">
+
     </div>
   </section>
 
