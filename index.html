@@ -75,7 +75,11 @@
   .grid h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--label); }
   .grid p { margin: 0; font-size: 18px; line-height: 1.65; }
   .grid a { color: var(--light); }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+  .phone { margin: 0; font-size: 18px; }
+  .map { width: 100%; height: 380px; border: 0; border-radius: 20px; background: var(--photo); }
+  @media (max-width: 640px) { .map { height: 300px; } }
+  .phone a { color: var(--light); font-weight: 700; text-decoration: none; }
 
   footer { padding-top: 32px; padding-bottom: 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--soft); }
 
@@ -140,7 +144,8 @@
       <div class="grid">
         <div>
           <h3>Waar</h3>
-          <p>[STRAAT EN NUMMER]<br>1981 Hofstade (Zemst)</p>
+          <p>Tervuursesteenweg 183<br>1981 Hofstade (Zemst)</p>
+          <p><a href="https://www.google.com/maps/search/?api=1&query=Tervuursesteenweg+183+1981+Hofstade" target="_blank" rel="noopener">Route plannen</a></p>
         </div>
         <div>
           <h3>Wanneer</h3>
@@ -153,8 +158,9 @@
       </div>
       <div class="actions">
         <a href="https://www.mtc-it4.be/patient/index.html#/appointments/day/bjNkcWkyQmFRMkpDVTRFNndleFgzSzRwRFR3blpLVFROa2xUY3oyd1JUSFpoa29hSHJKcmFOMEg1Zm5tZVdQTw==" class="btn btn-light" target="_blank" rel="noopener">Online afspraak</a>
-        <a href="tel:[TELEFOON]" class="btn btn-outline-light">Bel [TELEFOON]</a>
+        <p class="phone">Of bel <a href="tel:+3215611563">015/61.15.63</a></p>
       </div>
+      <iframe class="map" title="Kaart: Tervuursesteenweg 183, 1981 Hofstade" src="https://www.google.com/maps?q=Tervuursesteenweg+183,+1981+Hofstade&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
     </div>
   </section>
 </main>
