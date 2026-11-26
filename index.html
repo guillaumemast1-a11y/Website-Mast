@@ -1,633 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rekoncile — Automated PSP Reconciliation</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dokter Philippe Mast, uroloog in Hofstade</title>
+<meta name="description" content="Urologische praktijk van dr. Philippe Mast in Hofstade (Zemst). Prostaat, nierstenen, urineverlies, infecties en oncologische opvolging. Online afspraak maken.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Karla:wght@400;500;700&display=swap">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --ink: #0f0f0e;
-  --ink2: #3a3935;
-  --ink3: #7a7870;
-  --paper: #f5f3ef;
-  --paper2: #ece9e3;
-  --paper3: #e2dfd8;
-  --accent: #1a4a2e;
-  --accent2: #2d7a4f;
-  --accent-light: #e8f2ec;
-  --rule: rgba(15,15,14,0.12);
-  --rule2: rgba(15,15,14,0.07);
-}
-html { font-size: 16px; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--paper);
-  color: var(--ink);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-.serif { font-family: 'Instrument Serif', Georgia, serif; }
-.mono { font-family: 'DM Mono', monospace; }
+  :root {
+    --accent: #24452f;
+    --ink: #1c2a21;
+    --muted: #3c4c42;
+    --soft: #4b5c51;
+    --bg: #eef2ee;
+    --line: #dde4de;
+    --photo: #d5ded6;
+    --light: #f1f5f1;
+    --label: #c6d6ca;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'Karla', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+  a { color: var(--accent); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
 
-/* NAV */
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--paper);
-  border-bottom: 1px solid var(--rule);
-  padding: 0 48px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 56px;
-}
-.nav-logo {
-  font-family: 'DM Mono', monospace;
-  font-size: 15px; font-weight: 500;
-  color: var(--ink); text-decoration: none;
-  display: flex; align-items: center; gap: 8px;
-}
-.logo-mark {
-  width: 26px; height: 26px;
-  background: var(--accent);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 12px; font-weight: 500; letter-spacing: -0.5px;
-}
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-links a {
-  font-size: 13px; color: var(--ink2);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--ink); }
-.btn-nav {
-  font-size: 13px; font-weight: 500;
-  padding: 8px 18px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.btn-ghost {
-  color: var(--ink2);
-  border: 1px solid var(--rule);
-  background: transparent;
-}
-.btn-ghost:hover { background: var(--paper2); }
-.btn-primary {
-  background: var(--accent);
-  color: #fff; border: 1px solid transparent;
-}
-.btn-primary:hover { background: var(--accent2); }
+  /* Knoppen */
+  .btn { display: inline-block; text-decoration: none; padding: 17px 28px; border-radius: 999px; font-weight: 700; font-size: 17px; }
+  .btn-solid { background: var(--accent); color: #fff; }
+  .btn-solid:hover { background: #152c1d; }
+  .btn-light { background: var(--light); color: var(--ink); }
+  .btn-outline-light { border: 1.5px solid var(--light); color: var(--light); }
 
-/* HERO */
-.hero-grid {
-  padding: 100px 48px 80px;
-  max-width: 1100px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 80px; align-items: start;
-}
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--accent-light);
-  border: 1px solid rgba(26,74,46,0.2);
-  border-radius: 100px;
-  padding: 5px 14px;
-  font-size: 12px; font-weight: 500; color: var(--accent);
-  margin-bottom: 28px;
-  font-family: 'DM Mono', monospace;
-}
-.badge-dot {
-  width: 6px; height: 6px;
-  background: var(--accent2); border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50% { opacity:0.6; transform:scale(0.85); }
-}
-.hero h1 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 56px; line-height: 1.08; font-weight: 400;
-  letter-spacing: -1px;
-  color: var(--ink);
-  margin-bottom: 24px;
-}
-.hero h1 em { font-style: italic; color: var(--accent); }
-.hero-sub {
-  font-size: 17px; color: var(--ink2); line-height: 1.6;
-  max-width: 420px; margin-bottom: 40px;
-  font-weight: 300;
-}
-.hero-actions {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.btn-large {
-  padding: 13px 28px; font-size: 15px; font-weight: 500;
-  border-radius: 8px; text-decoration: none;
-  transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
-}
-.btn-large-primary {
-  background: var(--accent); color: #fff;
-  border: 1px solid transparent;
-}
-.btn-large-primary:hover { background: var(--accent2); }
-.btn-large-ghost {
-  color: var(--ink2); border: 1px solid var(--rule);
-  background: transparent;
-}
-.btn-large-ghost:hover { background: var(--paper2); }
-.hero-note {
-  margin-top: 20px; font-size: 12px; color: var(--ink3);
-  font-family: 'DM Mono', monospace;
-}
+  /* Kop */
+  header { padding-top: 28px; padding-bottom: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 24px; font-weight: 600; }
+  .logo span { font-family: var(--sans); font-size: 15px; font-weight: 500; color: var(--soft); }
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 26px; font-size: 16px; }
+  nav a { text-decoration: none; color: var(--ink); }
+  nav a.pill { border: 1.5px solid var(--ink); padding: 11px 20px; border-radius: 999px; font-weight: 700; }
 
-/* DASHBOARD PREVIEW */
-.hero-preview {
-  background: var(--ink);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 32px 64px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.1);
-}
-.preview-bar {
-  background: #1a1a18;
-  padding: 12px 16px;
-  display: flex; align-items: center; gap: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-.preview-title {
-  margin-left: 8px; font-size: 11px; color: rgba(255,255,255,0.3);
-  font-family: 'DM Mono', monospace;
-}
-.preview-body { padding: 20px; }
-.preview-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 10px; margin-bottom: 16px;
-}
-.stat-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 8px; padding: 12px 14px;
-}
-.stat-label { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'DM Mono', monospace; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 20px; font-weight: 500; color: #fff; font-family: 'DM Mono', monospace; }
-.stat-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-.preview-table { width: 100%; }
-.preview-table-head {
-  display: grid; grid-template-columns: 1fr 2fr 1fr 0.8fr;
-  padding: 6px 8px;
-  font-size: 10px; color: rgba(255,255,255,0.3);
-  font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.preview-row {
-  display: grid; grid-template-columns: 1fr 2fr 1fr 0.8fr;
-  padding: 9px 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  align-items: center;
-}
-.preview-row:last-child { border-bottom: none; }
-.row-psp { font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.4); }
-.row-desc { font-size: 12px; color: rgba(255,255,255,0.7); }
-.row-amount { font-size: 12px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.85); font-weight: 500; }
-.row-amount.neg { color: #f87171; }
-.row-status { display: flex; justify-content: flex-end; }
-.badge {
-  display: inline-block; padding: 2px 8px;
-  border-radius: 4px; font-size: 10px; font-weight: 500;
-  font-family: 'DM Mono', monospace;
-}
-.badge-booked { background: rgba(45,122,79,0.2); color: #5ecd8a; border: 1px solid rgba(45,122,79,0.3); }
-.badge-refund { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
-.badge-pending { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
-.preview-footer {
-  margin-top: 14px; padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex; gap: 16px; flex-wrap: wrap;
-}
-.status-pill {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 10px; color: rgba(255,255,255,0.35);
-  font-family: 'DM Mono', monospace;
-}
-.status-dot { width: 5px; height: 5px; border-radius: 50%; background: #5ecd8a; }
+  /* Intro */
+  .hero { padding-top: 48px; padding-bottom: 96px; display: flex; flex-wrap: wrap; gap: 56px; align-items: flex-end; }
+  .hero-text { flex: 1 1 520px; display: flex; flex-direction: column; gap: 28px; align-items: flex-start; }
+  h1 { margin: 0; font-family: var(--serif); font-size: clamp(40px, 6vw, 64px); line-height: 1.04; font-weight: 500; color: var(--accent); }
+  .lead { margin: 0; font-size: 20px; line-height: 1.6; color: var(--muted); max-width: 560px; }
+  .portrait { flex: 1 1 320px; height: 460px; border-radius: 220px 220px 20px 20px; background: var(--photo); display: flex; align-items: center; justify-content: center; color: var(--soft); font-size: 15px; overflow: hidden; }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; }
 
-/* LOGOS BAR */
-.logos-bar {
-  border-top: 1px solid var(--rule2);
-  border-bottom: 1px solid var(--rule2);
-  padding: 20px 48px;
-  display: flex; align-items: center; gap: 32px;
-  max-width: 1100px; margin: 0 auto;
-}
-.logos-label { font-size: 11px; color: var(--ink3); font-family: 'DM Mono', monospace; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-.logos-list { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.logo-item {
-  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
-  color: var(--ink3); letter-spacing: 0.3px;
-  padding: 6px 14px; border: 1px solid var(--rule);
-  border-radius: 6px; white-space: nowrap;
-}
+  /* Zorg */
+  .zorg { background: #fff; }
+  .zorg .wrap { padding-top: 96px; padding-bottom: 96px; display: flex; flex-wrap: wrap; gap: 56px; }
+  .zorg-intro { flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px; }
+  h2 { margin: 0; font-family: var(--serif); font-size: 40px; font-weight: 500; color: var(--accent); }
+  .zorg-intro p { margin: 0; font-size: 17px; line-height: 1.65; color: var(--muted); }
+  .zorg-list { flex: 2 1 540px; display: flex; flex-direction: column; }
+  .item { display: flex; flex-wrap: wrap; gap: 8px 32px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .item h3 { margin: 0; flex: 1 1 220px; font-size: 20px; font-weight: 700; }
+  .item p { margin: 0; flex: 2 1 300px; font-size: 16px; line-height: 1.6; color: var(--muted); }
 
-/* SECTION COMMON */
-.section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
-.section-label {
-  font-size: 11px; font-family: 'DM Mono', monospace;
-  color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 16px;
-}
-.section-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 42px; line-height: 1.1; font-weight: 400;
-  letter-spacing: -0.5px; margin-bottom: 16px;
-}
-.section-title em { font-style: italic; color: var(--accent); }
-.section-sub { font-size: 17px; color: var(--ink2); max-width: 560px; font-weight: 300; line-height: 1.6; }
+  /* Over */
+  .over { padding-top: 96px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 24px; }
+  .quote { margin: 0; font-family: var(--serif); font-size: clamp(26px, 3.4vw, 34px); line-height: 1.35; font-weight: 500; color: var(--accent); max-width: 860px; }
+  .over p.bio { margin: 0; font-size: 17px; line-height: 1.7; color: var(--muted); max-width: 720px; }
 
-/* HOW IT WORKS */
-.steps { margin-top: 64px; display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; }
-.step-num {
-  font-family: 'DM Mono', monospace; font-size: 11px;
-  color: var(--ink3); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 12px;
-}
-.step-num::before {
-  content: '';
-  display: block; height: 1px; width: 24px;
-  background: var(--rule);
-}
-.step h3 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 22px; font-weight: 400; margin-bottom: 12px; letter-spacing: -0.2px;
-}
-.step p { font-size: 14px; color: var(--ink2); line-height: 1.65; font-weight: 300; }
+  /* Bezoek */
+  .bezoek { background: var(--accent); color: var(--light); }
+  .bezoek .wrap { padding-top: 96px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 48px; }
+  .bezoek h2 { color: var(--light); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
+  .grid h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--label); }
+  .grid p { margin: 0; font-size: 18px; line-height: 1.65; }
+  .grid a { color: var(--light); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
-/* FEATURES */
-.features-grid {
-  margin-top: 64px;
-  display: grid; grid-template-columns: repeat(2,1fr);
-  gap: 0;
-  border: 1px solid var(--rule);
-  border-radius: 12px; overflow: hidden;
-}
-.feature {
-  padding: 36px; border-right: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  transition: background 0.2s;
-}
-.feature:hover { background: var(--paper2); }
-.feature:nth-child(2n) { border-right: none; }
-.feature:nth-last-child(-n+2) { border-bottom: none; }
-.feat-tag {
-  font-size: 10px; font-family: 'DM Mono', monospace;
-  color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px;
-  margin-bottom: 14px;
-}
-.feature h3 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 20px; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.2px;
-}
-.feature p { font-size: 13.5px; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+  footer { padding-top: 32px; padding-bottom: 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--soft); }
 
-/* PRICING */
-.pricing-grid {
-  margin-top: 64px;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 24px; max-width: 760px;
-}
-.pricing-card {
-  border: 1px solid var(--rule);
-  border-radius: 12px; padding: 36px;
-  background: var(--paper);
-  position: relative;
-}
-.pricing-card.featured {
-  border-color: var(--accent);
-  background: var(--ink);
-  color: #fff;
-}
-.popular-tag {
-  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-  background: var(--accent); color: #fff;
-  font-size: 10px; font-weight: 500; font-family: 'DM Mono', monospace;
-  padding: 3px 12px; border-radius: 100px; white-space: nowrap;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.plan-name {
-  font-size: 11px; font-family: 'DM Mono', monospace;
-  text-transform: uppercase; letter-spacing: 1px;
-  color: var(--ink3); margin-bottom: 20px;
-}
-.featured .plan-name { color: rgba(255,255,255,0.4); }
-.plan-price {
-  font-family: 'Instrument Serif', serif;
-  font-size: 48px; font-weight: 400; line-height: 1;
-  margin-bottom: 6px; letter-spacing: -1px;
-}
-.featured .plan-price { color: #fff; }
-.plan-period { font-size: 13px; color: var(--ink3); margin-bottom: 8px; }
-.featured .plan-period { color: rgba(255,255,255,0.4); }
-.plan-desc { font-size: 13px; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
-.featured .plan-desc { color: rgba(255,255,255,0.55); }
-.plan-items { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
-.plan-items li {
-  font-size: 13px; color: var(--ink2);
-  display: flex; align-items: flex-start; gap: 10px; line-height: 1.4;
-}
-.featured .plan-items li { color: rgba(255,255,255,0.65); }
-.plan-check {
-  width: 16px; height: 16px; flex-shrink: 0;
-  background: var(--accent-light); border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  margin-top: 1px;
-}
-.featured .plan-check { background: rgba(45,122,79,0.3); }
-.plan-check svg { width: 10px; height: 10px; stroke: var(--accent); stroke-width: 2.5; fill: none; }
-.featured .plan-check svg { stroke: #5ecd8a; }
-.plan-cta {
-  display: block; text-align: center; text-decoration: none;
-  padding: 12px; border-radius: 7px; font-size: 14px; font-weight: 500;
-  transition: all 0.2s;
-}
-.plan-cta-ghost { border: 1px solid var(--rule); color: var(--ink); }
-.plan-cta-ghost:hover { background: var(--paper2); }
-.plan-cta-filled { background: var(--accent2); color: #fff; border: 1px solid transparent; }
-.plan-cta-filled:hover { background: #3a9060; }
-
-/* CTA SECTION */
-.cta-section { background: var(--ink); padding: 100px 48px; }
-.cta-inner { max-width: 680px; margin: 0 auto; text-align: center; }
-.cta-section .section-label { color: rgba(255,255,255,0.4); }
-.cta-section h2 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 48px; line-height: 1.08; font-weight: 400;
-  color: #fff; letter-spacing: -0.5px; margin-bottom: 20px;
-}
-.cta-section h2 em { font-style: italic; color: #5ecd8a; }
-.cta-section p { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 40px; font-weight: 300; }
-.cta-note { font-size: 12px; color: rgba(255,255,255,0.25); font-family: 'DM Mono', monospace; margin-top: 20px; }
-
-/* FOOTER */
-footer {
-  background: var(--ink);
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding: 32px 48px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.footer-logo { color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; font-size: 13px; }
-.footer-links { display: flex; gap: 28px; }
-.footer-links a { font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
-.footer-links a:hover { color: rgba(255,255,255,0.6); }
-
-.full-rule { border: none; border-top: 1px solid var(--rule); }
-
-@media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 48px; padding: 60px 24px 60px; }
-  nav { padding: 0 24px; }
-  .nav-links a:not(.btn-nav) { display: none; }
-  .section { padding: 60px 24px; }
-  .steps { grid-template-columns: 1fr; gap: 40px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .feature:nth-child(2n) { border-right: 1px solid var(--rule); }
-  .feature:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
-  .feature:last-child { border-bottom: none; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .cta-section { padding: 60px 24px; }
-  footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
-  .logos-bar { flex-direction: column; align-items: flex-start; padding: 20px 24px; gap: 16px; }
-}
+  @media (max-width: 640px) {
+    nav { gap: 18px; font-size: 15px; }
+    .hero { padding-bottom: 64px; }
+    .portrait { height: 360px; }
+    .zorg .wrap, .over, .bezoek .wrap { padding-top: 64px; padding-bottom: 64px; }
+    h2 { font-size: 32px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="/" class="nav-logo">
-    <div class="logo-mark">R</div>
-    Rekoncile
-  </a>
-  <div class="nav-links">
-    <a href="#how-it-works">How it works</a>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="/login" class="btn-nav btn-ghost">Login</a>
-    <a href="/register" class="btn-nav btn-primary">Start free →</a>
-  </div>
-</nav>
+<header class="wrap">
+  <a href="#" class="logo">Dokter Mast <span>uroloog</span></a>
+  <nav aria-label="Hoofdmenu">
+    <a href="#zorg">Zorg</a>
+    <a href="#over">Wie ben ik</a>
+    <a href="#bezoek">Uw bezoek</a>
+    <a href="[AFSPRAKEN_LINK]" class="pill" target="_blank" rel="noopener">Afspraak</a>
+  </nav>
+</header>
 
-<!-- HERO -->
-<div class="hero-grid">
-  <div class="hero">
-    <div class="hero-badge">
-      <div class="badge-dot"></div>
-      Now in beta — free to try
+<main>
+  <section class="wrap hero">
+    <div class="hero-text">
+      <h1>Over gevoelige klachten praat u best in alle rust.</h1>
+      <p class="lead">In mijn praktijk in Hofstade neem ik de tijd om te luisteren, uit te leggen en samen met u de juiste behandeling te kiezen.</p>
+      <a href="[AFSPRAKEN_LINK]" class="btn btn-solid" target="_blank" rel="noopener">Maak een afspraak</a>
     </div>
-    <h1>PSP reconciliation,<br><em>fully automatic.</em></h1>
-    <p class="hero-sub">Connect Mollie, Stripe, or Adyen to Exact Online. Every payment, refund, and chargeback is booked automatically — with zero manual work.</p>
-    <div class="hero-actions">
-      <a href="/register" class="btn-large btn-large-primary">Start for free →</a>
-      <a href="#how-it-works" class="btn-large btn-large-ghost">See how it works</a>
+    <div class="portrait">
+      <!-- Vervang door: <img src="portret.jpg" alt="Dr. Philippe Mast"> -->
+      [PORTRET dr. Mast]
     </div>
-    <p class="hero-note">Free beta · No credit card · Exact Online required</p>
-  </div>
+  </section>
 
-  <div class="hero-preview">
-    <div class="preview-bar">
-      <div class="preview-dot" style="background:#ff5f57"></div>
-      <div class="preview-dot" style="background:#febc2e"></div>
-      <div class="preview-dot" style="background:#28c840"></div>
-      <span class="preview-title">rekoncile.io/dashboard</span>
-    </div>
-    <div class="preview-body">
-      <div class="preview-stats">
-        <div class="stat-card">
-          <div class="stat-label">Booked today</div>
-          <div class="stat-value">€4,280</div>
-          <div class="stat-sub">12 transactions</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Payments</div>
-          <div class="stat-value">244</div>
-          <div class="stat-sub">booked / 247</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Errors</div>
-          <div class="stat-value" style="color:#5ecd8a">0</div>
-          <div class="stat-sub">clean run</div>
-        </div>
+  <section id="zorg" class="zorg">
+    <div class="wrap">
+      <div class="zorg-intro">
+        <h2>Waarmee ik u help</h2>
+        <p>Twijfelt u of uw klacht hier thuishoort? Bel gerust even.</p>
       </div>
-      <div class="preview-table">
-        <div class="preview-table-head">
-          <div>PSP</div>
-          <div>Description</div>
-          <div>Amount</div>
-          <div style="text-align:right">Status</div>
-        </div>
-        <div class="preview-row">
-          <div class="row-psp">iDEAL</div>
-          <div class="row-desc">Webshop order #1291</div>
-          <div class="row-amount">€121.00</div>
-          <div class="row-status"><span class="badge badge-booked">booked</span></div>
-        </div>
-        <div class="preview-row">
-          <div class="row-psp">Card</div>
-          <div class="row-desc">Subscription renewal</div>
-          <div class="row-amount">€49.00</div>
-          <div class="row-status"><span class="badge badge-booked">booked</span></div>
-        </div>
-        <div class="preview-row">
-          <div class="row-psp">iDEAL</div>
-          <div class="row-desc">Order #1288 refund</div>
-          <div class="row-amount neg">−€15.00</div>
-          <div class="row-status"><span class="badge badge-refund">refund</span></div>
-        </div>
-        <div class="preview-row">
-          <div class="row-psp">Banc.</div>
-          <div class="row-desc">Invoice payment</div>
-          <div class="row-amount">€380.00</div>
-          <div class="row-status"><span class="badge badge-pending">pending</span></div>
-        </div>
-      </div>
-      <div class="preview-footer">
-        <div class="status-pill"><div class="status-dot"></div>Exact Online synced</div>
-        <div class="status-pill"><div class="status-dot"></div>Booking rules active</div>
-        <div class="status-pill"><div class="status-dot"></div>Auto-booking ON</div>
+      <div class="zorg-list">
+        <div class="item"><h3>Prostaat</h3><p>Plasklachten, PSA-opvolging en vergroting van de prostaat.</p></div>
+        <div class="item"><h3>Nierstenen</h3><p>Van acute pijn tot het voorkomen van nieuwe stenen.</p></div>
+        <div class="item"><h3>Urineverlies</h3><p>Discreet onderzoek en behandeling op maat.</p></div>
+        <div class="item"><h3>Infecties</h3><p>Terugkerende blaasontstekingen grondig onderzocht.</p></div>
+        <div class="item"><h3>Kanker opsporen en opvolgen</h3><p>Prostaat, blaas en nieren, in overleg met uw huisarts.</p></div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- LOGOS BAR -->
-<hr class="full-rule">
-<div class="logos-bar">
-  <span class="logos-label">Works with</span>
-  <div class="logos-list">
-    <span class="logo-item">Mollie</span>
-    <span class="logo-item">Stripe</span>
-    <span class="logo-item">Adyen</span>
-    <span class="logo-item">PayPal</span>
-    <span class="logo-item">Exact Online</span>
-    <span class="logo-item">Twinfield</span>
-  </div>
-</div>
-<hr class="full-rule">
+  <section id="over" class="wrap over">
+    <p class="quote">“[EEN ZIN VAN DR. MAST OVER HOE HIJ ZORG VERLEENT.]”</p>
+    <p class="bio">[INTRODUCTIE: opleiding, ziekenhuis, aandachtsgebieden, talen.] RIZIV [RIZIV-NUMMER].</p>
+  </section>
 
-<!-- HOW IT WORKS -->
-<section id="how-it-works" class="section">
-  <div class="section-label">How it works</div>
-  <h2 class="section-title">Three steps to <em>zero manual work</em></h2>
-  <p class="section-sub">Built for accounting firms managing multiple clients. Connect once, configure rules, let it run.</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">01</div>
-      <h3>Connect your client</h3>
-      <p>Link the client's Mollie account and Exact Online division. Takes 2 minutes. We handle OAuth and token refresh automatically — nothing to maintain.</p>
+  <section id="bezoek" class="bezoek">
+    <div class="wrap">
+      <h2>Uw bezoek</h2>
+      <div class="grid">
+        <div>
+          <h3>Waar</h3>
+          <p>[STRAAT EN NUMMER]<br>1981 Hofstade (Zemst)</p>
+        </div>
+        <div>
+          <h3>Wanneer</h3>
+          <p>[DAGEN EN UREN]<br>Enkel op afspraak</p>
+        </div>
+        <div>
+          <h3>Meebrengen</h3>
+          <p>Identiteitskaart, verwijsbrief en recente resultaten</p>
+        </div>
+      </div>
+      <div class="actions">
+        <a href="[AFSPRAKEN_LINK]" class="btn btn-light" target="_blank" rel="noopener">Online afspraak</a>
+        <a href="tel:[TELEFOON]" class="btn btn-outline-light">Bel [TELEFOON]</a>
+      </div>
     </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <h3>Set booking rules</h3>
-      <p>When a new payment type arrives, Rekoncile asks you to map it to GL accounts. Set it once — all future payments of the same type follow the same rule.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <h3>Everything books itself</h3>
-      <p>Payments, refunds, and chargebacks are posted to Exact Online every 5 minutes. No manual exports, no copy-paste, no errors.</p>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<hr class="full-rule">
-
-<!-- FEATURES -->
-<section id="features" class="section">
-  <div class="section-label">Features</div>
-  <h2 class="section-title">Built for <em>accounting firms</em></h2>
-  <p class="section-sub">Everything you need to handle PSP reconciliation at scale, across all your clients.</p>
-  <div class="features-grid">
-    <div class="feature">
-      <div class="feat-tag">Multi-client</div>
-      <h3>All clients in one place</h3>
-      <p>Each client gets their own Mollie and Exact Online connection. Switch between accounts instantly. See the booking status of every administration at a glance.</p>
-    </div>
-    <div class="feature">
-      <div class="feat-tag">Rule engine</div>
-      <h3>Flexible booking rules per PSP</h3>
-      <p>Map any combination of PSP × transaction type to your GL accounts. Paid, refunded, partially refunded, chargeback — each gets its own rule.</p>
-    </div>
-    <div class="feature">
-      <div class="feat-tag">Exact Online</div>
-      <h3>Native API integration</h3>
-      <p>We post directly to Exact's General Journal API using the correct dagboek and grootboekrekeningen. No middleware, no file imports, no CAMT files.</p>
-    </div>
-    <div class="feature">
-      <div class="feat-tag">Reliability</div>
-      <h3>Automatic retries & error tracking</h3>
-      <p>Failed bookings retry automatically. Every booking is logged with its Exact entry ID. You always know what was booked, when, and why it succeeded or failed.</p>
-    </div>
-  </div>
-</section>
-
-<hr class="full-rule">
-
-<!-- PRICING -->
-<section id="pricing" class="section">
-  <div class="section-label">Pricing</div>
-  <h2 class="section-title">Simple pricing, <em>per client</em></h2>
-  <p class="section-sub">One flat monthly fee based on how many clients you manage. No per-transaction costs, no surprises.</p>
-  <div class="pricing-grid">
-    <div class="pricing-card">
-      <div class="plan-name">Starter</div>
-      <div class="plan-price">€49</div>
-      <div class="plan-period">/ month</div>
-      <div class="plan-desc">Up to 5 clients. Perfect for getting started.</div>
-      <ul class="plan-items">
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Up to 5 client connections</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Mollie integration</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Exact Online booking</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Refund &amp; chargeback handling</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Priority support</li>
-      </ul>
-      <a href="/register" class="plan-cta plan-cta-ghost">Start free →</a>
-    </div>
-    <div class="pricing-card featured">
-      <div class="popular-tag">Most popular</div>
-      <div class="plan-name">Pro</div>
-      <div class="plan-price">€129</div>
-      <div class="plan-period">/ month</div>
-      <div class="plan-desc">Unlimited clients. For growing accounting firms.</div>
-      <ul class="plan-items">
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Unlimited client connections</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>All PSP integrations (Mollie, Stripe, Adyen)</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Exact Online + Twinfield</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Refund &amp; chargeback handling</li>
-        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Priority support + onboarding call</li>
-      </ul>
-      <a href="/register" class="plan-cta plan-cta-filled">Start free →</a>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<div class="cta-section">
-  <div class="cta-inner">
-    <div class="section-label">Get started</div>
-    <h2>Ready to automate your <em>PSP reconciliation?</em></h2>
-    <p>Join accounting firms already saving hours every month. Free to try during beta, no credit card required.</p>
-    <a href="/register" class="btn-large btn-large-primary" style="background:#2d7a4f;display:inline-flex;">Start for free →</a>
-    <p class="cta-note">Free beta · No credit card · Exact Online required</p>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <span class="footer-logo">© 2026 Rekoncile</span>
-  <div class="footer-links">
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
-    <a href="mailto:hello@rekoncile.io">hello@rekoncile.io</a>
-  </div>
+<footer class="wrap">
+  <span>Dr. Philippe Mast · <a href="mailto:[E-MAIL]">[E-MAIL]</a></span>
+  <span>Dringend buiten de uren: 1733 · noodgeval: 112</span>
 </footer>
 
 </body>
