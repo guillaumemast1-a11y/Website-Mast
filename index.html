@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekoncile — Automated PSP Reconciliation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #0f0f0e;
+  --ink2: #3a3935;
+  --ink3: #7a7870;
+  --paper: #f5f3ef;
+  --paper2: #ece9e3;
+  --paper3: #e2dfd8;
+  --accent: #1a4a2e;
+  --accent2: #2d7a4f;
+  --accent-light: #e8f2ec;
+  --rule: rgba(15,15,14,0.12);
+  --rule2: rgba(15,15,14,0.07);
+}
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.serif { font-family: 'Instrument Serif', Georgia, serif; }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px; font-weight: 500;
+  color: var(--ink); text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 12px; font-weight: 500; letter-spacing: -0.5px;
+}
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: 13px; color: var(--ink2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.btn-nav {
+  font-size: 13px; font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-ghost {
+  color: var(--ink2);
+  border: 1px solid var(--rule);
+  background: transparent;
+}
+.btn-ghost:hover { background: var(--paper2); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff; border: 1px solid transparent;
+}
+.btn-primary:hover { background: var(--accent2); }
+
+/* HERO */
+.hero-grid {
+  padding: 100px 48px 80px;
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--accent-light);
+  border: 1px solid rgba(26,74,46,0.2);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 12px; font-weight: 500; color: var(--accent);
+  margin-bottom: 28px;
+  font-family: 'DM Mono', monospace;
+}
+.badge-dot {
+  width: 6px; height: 6px;
+  background: var(--accent2); border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.6; transform:scale(0.85); }
+}
+.hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 56px; line-height: 1.08; font-weight: 400;
+  letter-spacing: -1px;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-size: 17px; color: var(--ink2); line-height: 1.6;
+  max-width: 420px; margin-bottom: 40px;
+  font-weight: 300;
+}
+.hero-actions {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.btn-large {
+  padding: 13px 28px; font-size: 15px; font-weight: 500;
+  border-radius: 8px; text-decoration: none;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-large-primary {
+  background: var(--accent); color: #fff;
+  border: 1px solid transparent;
+}
+.btn-large-primary:hover { background: var(--accent2); }
+.btn-large-ghost {
+  color: var(--ink2); border: 1px solid var(--rule);
+  background: transparent;
+}
+.btn-large-ghost:hover { background: var(--paper2); }
+.hero-note {
+  margin-top: 20px; font-size: 12px; color: var(--ink3);
+  font-family: 'DM Mono', monospace;
+}
+
+/* DASHBOARD PREVIEW */
+.hero-preview {
+  background: var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 32px 64px rgba(0,0,0,0.18), 0 8px 16px rgba(0,0,0,0.1);
+}
+.preview-bar {
+  background: #1a1a18;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-title {
+  margin-left: 8px; font-size: 11px; color: rgba(255,255,255,0.3);
+  font-family: 'DM Mono', monospace;
+}
+.preview-body { padding: 20px; }
+.preview-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 12px 14px;
+}
+.stat-label { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'DM Mono', monospace; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 20px; font-weight: 500; color: #fff; font-family: 'DM Mono', monospace; }
+.stat-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+.preview-table { width: 100%; }
+.preview-table-head {
+  display: grid; grid-template-columns: 1fr 2fr 1fr 0.8fr;
+  padding: 6px 8px;
+  font-size: 10px; color: rgba(255,255,255,0.3);
+  font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.preview-row {
+  display: grid; grid-template-columns: 1fr 2fr 1fr 0.8fr;
+  padding: 9px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  align-items: center;
+}
+.preview-row:last-child { border-bottom: none; }
+.row-psp { font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.4); }
+.row-desc { font-size: 12px; color: rgba(255,255,255,0.7); }
+.row-amount { font-size: 12px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.85); font-weight: 500; }
+.row-amount.neg { color: #f87171; }
+.row-status { display: flex; justify-content: flex-end; }
+.badge {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 4px; font-size: 10px; font-weight: 500;
+  font-family: 'DM Mono', monospace;
+}
+.badge-booked { background: rgba(45,122,79,0.2); color: #5ecd8a; border: 1px solid rgba(45,122,79,0.3); }
+.badge-refund { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+.badge-pending { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+.preview-footer {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.status-pill {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; color: rgba(255,255,255,0.35);
+  font-family: 'DM Mono', monospace;
+}
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: #5ecd8a; }
+
+/* LOGOS BAR */
+.logos-bar {
+  border-top: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+  padding: 20px 48px;
+  display: flex; align-items: center; gap: 32px;
+  max-width: 1100px; margin: 0 auto;
+}
+.logos-label { font-size: 11px; color: var(--ink3); font-family: 'DM Mono', monospace; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+.logos-list { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.logo-item {
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  color: var(--ink3); letter-spacing: 0.3px;
+  padding: 6px 14px; border: 1px solid var(--rule);
+  border-radius: 6px; white-space: nowrap;
+}
+
+/* SECTION COMMON */
+.section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-size: 11px; font-family: 'DM Mono', monospace;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px; line-height: 1.1; font-weight: 400;
+  letter-spacing: -0.5px; margin-bottom: 16px;
+}
+.section-title em { font-style: italic; color: var(--accent); }
+.section-sub { font-size: 17px; color: var(--ink2); max-width: 560px; font-weight: 300; line-height: 1.6; }
+
+/* HOW IT WORKS */
+.steps { margin-top: 64px; display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; }
+.step-num {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--ink3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.step-num::before {
+  content: '';
+  display: block; height: 1px; width: 24px;
+  background: var(--rule);
+}
+.step h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; font-weight: 400; margin-bottom: 12px; letter-spacing: -0.2px;
+}
+.step p { font-size: 14px; color: var(--ink2); line-height: 1.65; font-weight: 300; }
+
+/* FEATURES */
+.features-grid {
+  margin-top: 64px;
+  display: grid; grid-template-columns: repeat(2,1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: 12px; overflow: hidden;
+}
+.feature {
+  padding: 36px; border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.2s;
+}
+.feature:hover { background: var(--paper2); }
+.feature:nth-child(2n) { border-right: none; }
+.feature:nth-last-child(-n+2) { border-bottom: none; }
+.feat-tag {
+  font-size: 10px; font-family: 'DM Mono', monospace;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+.feature h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.2px;
+}
+.feature p { font-size: 13.5px; color: var(--ink2); line-height: 1.6; font-weight: 300; }
+
+/* PRICING */
+.pricing-grid {
+  margin-top: 64px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px; max-width: 760px;
+}
+.pricing-card {
+  border: 1px solid var(--rule);
+  border-radius: 12px; padding: 36px;
+  background: var(--paper);
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: var(--accent);
+  background: var(--ink);
+  color: #fff;
+}
+.popular-tag {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #fff;
+  font-size: 10px; font-weight: 500; font-family: 'DM Mono', monospace;
+  padding: 3px 12px; border-radius: 100px; white-space: nowrap;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.plan-name {
+  font-size: 11px; font-family: 'DM Mono', monospace;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--ink3); margin-bottom: 20px;
+}
+.featured .plan-name { color: rgba(255,255,255,0.4); }
+.plan-price {
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px; font-weight: 400; line-height: 1;
+  margin-bottom: 6px; letter-spacing: -1px;
+}
+.featured .plan-price { color: #fff; }
+.plan-period { font-size: 13px; color: var(--ink3); margin-bottom: 8px; }
+.featured .plan-period { color: rgba(255,255,255,0.4); }
+.plan-desc { font-size: 13px; color: var(--ink2); margin-bottom: 28px; line-height: 1.5; }
+.featured .plan-desc { color: rgba(255,255,255,0.55); }
+.plan-items { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+.plan-items li {
+  font-size: 13px; color: var(--ink2);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.4;
+}
+.featured .plan-items li { color: rgba(255,255,255,0.65); }
+.plan-check {
+  width: 16px; height: 16px; flex-shrink: 0;
+  background: var(--accent-light); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.featured .plan-check { background: rgba(45,122,79,0.3); }
+.plan-check svg { width: 10px; height: 10px; stroke: var(--accent); stroke-width: 2.5; fill: none; }
+.featured .plan-check svg { stroke: #5ecd8a; }
+.plan-cta {
+  display: block; text-align: center; text-decoration: none;
+  padding: 12px; border-radius: 7px; font-size: 14px; font-weight: 500;
+  transition: all 0.2s;
+}
+.plan-cta-ghost { border: 1px solid var(--rule); color: var(--ink); }
+.plan-cta-ghost:hover { background: var(--paper2); }
+.plan-cta-filled { background: var(--accent2); color: #fff; border: 1px solid transparent; }
+.plan-cta-filled:hover { background: #3a9060; }
+
+/* CTA SECTION */
+.cta-section { background: var(--ink); padding: 100px 48px; }
+.cta-inner { max-width: 680px; margin: 0 auto; text-align: center; }
+.cta-section .section-label { color: rgba(255,255,255,0.4); }
+.cta-section h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px; line-height: 1.08; font-weight: 400;
+  color: #fff; letter-spacing: -0.5px; margin-bottom: 20px;
+}
+.cta-section h2 em { font-style: italic; color: #5ecd8a; }
+.cta-section p { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 40px; font-weight: 300; }
+.cta-note { font-size: 12px; color: rgba(255,255,255,0.25); font-family: 'DM Mono', monospace; margin-top: 20px; }
+
+/* FOOTER */
+footer {
+  background: var(--ink);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-logo { color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; font-size: 13px; }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: rgba(255,255,255,0.6); }
+
+.full-rule { border: none; border-top: 1px solid var(--rule); }
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; padding: 60px 24px 60px; }
+  nav { padding: 0 24px; }
+  .nav-links a:not(.btn-nav) { display: none; }
+  .section { padding: 60px 24px; }
+  .steps { grid-template-columns: 1fr; gap: 40px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature:nth-child(2n) { border-right: 1px solid var(--rule); }
+  .feature:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .feature:last-child { border-bottom: none; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .cta-section { padding: 60px 24px; }
+  footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
+  .logos-bar { flex-direction: column; align-items: flex-start; padding: 20px 24px; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-mark">R</div>
+    Rekoncile
+  </a>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="/login" class="btn-nav btn-ghost">Login</a>
+    <a href="/register" class="btn-nav btn-primary">Start free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-grid">
+  <div class="hero">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      Now in beta — free to try
+    </div>
+    <h1>PSP reconciliation,<br><em>fully automatic.</em></h1>
+    <p class="hero-sub">Connect Mollie, Stripe, or Adyen to Exact Online. Every payment, refund, and chargeback is booked automatically — with zero manual work.</p>
+    <div class="hero-actions">
+      <a href="/register" class="btn-large btn-large-primary">Start for free →</a>
+      <a href="#how-it-works" class="btn-large btn-large-ghost">See how it works</a>
+    </div>
+    <p class="hero-note">Free beta · No credit card · Exact Online required</p>
+  </div>
+
+  <div class="hero-preview">
+    <div class="preview-bar">
+      <div class="preview-dot" style="background:#ff5f57"></div>
+      <div class="preview-dot" style="background:#febc2e"></div>
+      <div class="preview-dot" style="background:#28c840"></div>
+      <span class="preview-title">rekoncile.io/dashboard</span>
+    </div>
+    <div class="preview-body">
+      <div class="preview-stats">
+        <div class="stat-card">
+          <div class="stat-label">Booked today</div>
+          <div class="stat-value">€4,280</div>
+          <div class="stat-sub">12 transactions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Payments</div>
+          <div class="stat-value">244</div>
+          <div class="stat-sub">booked / 247</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Errors</div>
+          <div class="stat-value" style="color:#5ecd8a">0</div>
+          <div class="stat-sub">clean run</div>
+        </div>
+      </div>
+      <div class="preview-table">
+        <div class="preview-table-head">
+          <div>PSP</div>
+          <div>Description</div>
+          <div>Amount</div>
+          <div style="text-align:right">Status</div>
+        </div>
+        <div class="preview-row">
+          <div class="row-psp">iDEAL</div>
+          <div class="row-desc">Webshop order #1291</div>
+          <div class="row-amount">€121.00</div>
+          <div class="row-status"><span class="badge badge-booked">booked</span></div>
+        </div>
+        <div class="preview-row">
+          <div class="row-psp">Card</div>
+          <div class="row-desc">Subscription renewal</div>
+          <div class="row-amount">€49.00</div>
+          <div class="row-status"><span class="badge badge-booked">booked</span></div>
+        </div>
+        <div class="preview-row">
+          <div class="row-psp">iDEAL</div>
+          <div class="row-desc">Order #1288 refund</div>
+          <div class="row-amount neg">−€15.00</div>
+          <div class="row-status"><span class="badge badge-refund">refund</span></div>
+        </div>
+        <div class="preview-row">
+          <div class="row-psp">Banc.</div>
+          <div class="row-desc">Invoice payment</div>
+          <div class="row-amount">€380.00</div>
+          <div class="row-status"><span class="badge badge-pending">pending</span></div>
+        </div>
+      </div>
+      <div class="preview-footer">
+        <div class="status-pill"><div class="status-dot"></div>Exact Online synced</div>
+        <div class="status-pill"><div class="status-dot"></div>Booking rules active</div>
+        <div class="status-pill"><div class="status-dot"></div>Auto-booking ON</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGOS BAR -->
+<hr class="full-rule">
+<div class="logos-bar">
+  <span class="logos-label">Works with</span>
+  <div class="logos-list">
+    <span class="logo-item">Mollie</span>
+    <span class="logo-item">Stripe</span>
+    <span class="logo-item">Adyen</span>
+    <span class="logo-item">PayPal</span>
+    <span class="logo-item">Exact Online</span>
+    <span class="logo-item">Twinfield</span>
+  </div>
+</div>
+<hr class="full-rule">
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="section">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">Three steps to <em>zero manual work</em></h2>
+  <p class="section-sub">Built for accounting firms managing multiple clients. Connect once, configure rules, let it run.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Connect your client</h3>
+      <p>Link the client's Mollie account and Exact Online division. Takes 2 minutes. We handle OAuth and token refresh automatically — nothing to maintain.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Set booking rules</h3>
+      <p>When a new payment type arrives, Rekoncile asks you to map it to GL accounts. Set it once — all future payments of the same type follow the same rule.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Everything books itself</h3>
+      <p>Payments, refunds, and chargebacks are posted to Exact Online every 5 minutes. No manual exports, no copy-paste, no errors.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="full-rule">
+
+<!-- FEATURES -->
+<section id="features" class="section">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Built for <em>accounting firms</em></h2>
+  <p class="section-sub">Everything you need to handle PSP reconciliation at scale, across all your clients.</p>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feat-tag">Multi-client</div>
+      <h3>All clients in one place</h3>
+      <p>Each client gets their own Mollie and Exact Online connection. Switch between accounts instantly. See the booking status of every administration at a glance.</p>
+    </div>
+    <div class="feature">
+      <div class="feat-tag">Rule engine</div>
+      <h3>Flexible booking rules per PSP</h3>
+      <p>Map any combination of PSP × transaction type to your GL accounts. Paid, refunded, partially refunded, chargeback — each gets its own rule.</p>
+    </div>
+    <div class="feature">
+      <div class="feat-tag">Exact Online</div>
+      <h3>Native API integration</h3>
+      <p>We post directly to Exact's General Journal API using the correct dagboek and grootboekrekeningen. No middleware, no file imports, no CAMT files.</p>
+    </div>
+    <div class="feature">
+      <div class="feat-tag">Reliability</div>
+      <h3>Automatic retries & error tracking</h3>
+      <p>Failed bookings retry automatically. Every booking is logged with its Exact entry ID. You always know what was booked, when, and why it succeeded or failed.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="full-rule">
+
+<!-- PRICING -->
+<section id="pricing" class="section">
+  <div class="section-label">Pricing</div>
+  <h2 class="section-title">Simple pricing, <em>per client</em></h2>
+  <p class="section-sub">One flat monthly fee based on how many clients you manage. No per-transaction costs, no surprises.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">€49</div>
+      <div class="plan-period">/ month</div>
+      <div class="plan-desc">Up to 5 clients. Perfect for getting started.</div>
+      <ul class="plan-items">
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Up to 5 client connections</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Mollie integration</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Exact Online booking</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Refund &amp; chargeback handling</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Priority support</li>
+      </ul>
+      <a href="/register" class="plan-cta plan-cta-ghost">Start free →</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="popular-tag">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">€129</div>
+      <div class="plan-period">/ month</div>
+      <div class="plan-desc">Unlimited clients. For growing accounting firms.</div>
+      <ul class="plan-items">
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Unlimited client connections</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>All PSP integrations (Mollie, Stripe, Adyen)</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Exact Online + Twinfield</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Refund &amp; chargeback handling</li>
+        <li><span class="plan-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Priority support + onboarding call</li>
+      </ul>
+      <a href="/register" class="plan-cta plan-cta-filled">Start free →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <div class="section-label">Get started</div>
+    <h2>Ready to automate your <em>PSP reconciliation?</em></h2>
+    <p>Join accounting firms already saving hours every month. Free to try during beta, no credit card required.</p>
+    <a href="/register" class="btn-large btn-large-primary" style="background:#2d7a4f;display:inline-flex;">Start for free →</a>
+    <p class="cta-note">Free beta · No credit card · Exact Online required</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">© 2026 Rekoncile</span>
+  <div class="footer-links">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+    <a href="mailto:hello@rekoncile.io">hello@rekoncile.io</a>
+  </div>
+</footer>
+
+</body>
+</html>
